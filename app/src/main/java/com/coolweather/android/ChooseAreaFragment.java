@@ -61,7 +61,7 @@ public class ChooseAreaFragment extends Fragment {
         titleText = (TextView) view.findViewById(R.id.title_text);
         backButton = (Button) view.findViewById(R.id.back_button);
         listView = (ListView) view.findViewById(R.id.list_view);
-        adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_expandable_list_item_1,dataList);
+        adapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_expandable_list_item_1,dataList);
         listView.setAdapter(adapter);
         return view;
     }
@@ -150,13 +150,18 @@ public class ChooseAreaFragment extends Fragment {
         }
     }
 /*根据传入的地址类型从服务器上查询省市县数据*/
-    private void queryFromServer(String address, String county) {
+    private void queryFromServer(String address, final String type) {
         showProgressDialog();
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                closeProgressDialog();
-                Toast.makeText(getContext(),"加载失败",Toast.LENGTH_SHORT).show();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        closeProgressDialog();
+                        Toast.makeText(getContext(),"加载失败",Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
